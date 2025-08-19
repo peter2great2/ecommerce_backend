@@ -1,9 +1,12 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "CommonJS",
-    "rootDir": "src",
-    "outDir": "dist",
-    "strict": true
+    "target": "ES2020", // JS version output
+    "module": "commonjs", // module system
+    "strict": true, // enable strict mode
+    "esModuleInterop": true, // allow default imports
+    "outDir": "./dist", // compiled JS output folder
+    "rootDir": "./src", // TS source folder
+    "resolveJsonModule": true, // allow importing .json
+    "skipLibCheck": true // skip type-checking .d.ts files
   }
 }
