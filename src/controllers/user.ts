@@ -50,7 +50,7 @@ export const updateUser = async (req: Request, res: Response) => {
       password: hashPass,
       role,
     });
-    res.clearCookie("token");
+    // res.clearCookie("token");
     if (!editUser) {
       res.status(400).json({
         message: "unable to update information",
@@ -75,8 +75,12 @@ export const logout = async (req: Request, res: Response) => {
   }
 };
 
-export const removeUser = async (req: Request, res: Response) => {
+export const removeUser = async (req: authRequest, res: Response) => {
   const userId = await User.findById(req.params.id);
+  const id = req.params.id;
+  if (req.user?.role !== "admin" && req.user?.id !== id) {
+    return res.status(403).json({ message: "Access denied. Admins only." });
+  }
   if (!userId) {
     return res.status(404).json({ message: `id not in database` });
   }

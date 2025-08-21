@@ -11,12 +11,16 @@ const userRouter = Router();
 import { authMiddleware } from "../middlewares/auth";
 import { adminMiddleware } from "../middlewares/adminAuth";
 
+// admin routes
+userRouter.get("/users/all", adminMiddleware, getAll);
+userRouter.delete("/user/remove/:id", authMiddleware, removeUser);
+
+// user routes
+
 userRouter.post("/register", register);
 userRouter.post("/login", login);
-userRouter.get("/users/all", adminMiddleware, getAll);
 userRouter.get("/profile/:id", authMiddleware, getProfile);
 userRouter.put("/update/:id", updateUser);
 userRouter.post("/user/logout", logout);
-userRouter.delete("/user/remove/:id", removeUser);
 
 export default userRouter;
