@@ -41,9 +41,13 @@ export const login = async (req: Request, res: Response) => {
         message: "wrong password",
       });
     }
-    let generateToken = jwt.sign({ id: user._id }, "SECRET", {
-      expiresIn: "1hr",
-    });
+    let generateToken = jwt.sign(
+      { id: user._id, role: user.role },
+      "SECRET" as string,
+      {
+        expiresIn: "1hr",
+      }
+    );
     res.cookie("token", generateToken);
     res.status(200).json({
       message: "successful",

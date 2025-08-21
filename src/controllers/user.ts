@@ -2,8 +2,18 @@ import User from "../schemas/user";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 
-export const getAll = async (req: Request, res: Response) => {
+interface authRequest extends Request {
+  user?: { id: string; role: string };
+}
+
+export const getAll = async (req: authRequest, res: Response) => {
   const users = await User.find().select("-password");
+
+  if (req.user?.role !== "admin") {
+    return res.status(403).json({
+      message: "Access denied. Admins only.",
+    });
+  }
   if (!users) {
     return res.status(400).json({
       message: "no registered user",
@@ -12,12 +22,15 @@ export const getAll = async (req: Request, res: Response) => {
   res.status(200).json(users);
 };
 
-export const getProfile = async (req: Request, res: Response) => {
+export const getProfile = async (req: authRequest, res: Response) => {
   const id = req.params.id;
   if (!id) {
     return res.status(400).json({
       message: "an id is needed to see profile",
     });
+  }
+  if (req.user?.role !== "admin" && req.user?.id !== id) {
+    return res.status(400).json({ message: "you can only see your profile" });
   }
   try {
     const profile = await User.findById(id).select("-password");
