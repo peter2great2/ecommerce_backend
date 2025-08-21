@@ -64,10 +64,14 @@ export const logout = async (req: Request, res: Response) => {
 };
 
 export const removeUser = async (req: Request, res: Response) => {
+  const userId = await User.findById(req.params.id);
+  if (!userId) {
+    return res.status(404).json({ message: `id not in database` });
+  }
   const user = await User.findByIdAndDelete(req.params.id);
   if (!user) {
     res.status(400).json({
-      message: "unable to delete user",
+      message: "invalid id",
     });
   }
   res.status(200).json({
