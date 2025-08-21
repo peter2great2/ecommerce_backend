@@ -62,3 +62,15 @@ export const logout = async (req: Request, res: Response) => {
     res.status(404).json({ message: "not logged in" });
   }
 };
+
+export const removeUser = async (req: Request, res: Response) => {
+  const user = await User.findByIdAndDelete(req.params.id);
+  if (!user) {
+    res.status(400).json({
+      message: "unable to delete user",
+    });
+  }
+  res.status(200).json({
+    message: `${user?.username} has been deleted from database`,
+  });
+};
