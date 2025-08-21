@@ -7,9 +7,12 @@ const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const mongoose_1 = __importDefault(require("mongoose"));
+const user_1 = __importDefault(require("./routes/user"));
 const app = (0, express_1.default)();
 const port = process.env.PORT || 3000;
 const mongoUrl = process.env.MONGO_URL || "mongodb://127.0.0.1:27017/shopify-app";
+app.use(express_1.default.json());
+app.use("/api/auth", user_1.default);
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
     mongoose_1.default
