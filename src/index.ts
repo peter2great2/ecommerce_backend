@@ -2,7 +2,6 @@ import express, { Application } from "express";
 import dotenv from "dotenv";
 dotenv.config();
 import mongoose from "mongoose";
-import UserSchema from "./schemas/UserSchema";
 import userRouter from "./routes/user";
 
 const app: Application = express();
