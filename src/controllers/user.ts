@@ -7,19 +7,18 @@ interface authRequest extends Request {
 }
 
 export const getAll = async (req: authRequest, res: Response) => {
-  const users = await User.find().select("-password");
-
-  if (req.user?.role !== "admin") {
+  const user = await User.find().select("-password");
+  if (req.user?.role == "admin") {
     return res.status(403).json({
       message: "Access denied. Admins only.",
     });
   }
-  if (!users) {
+  if (!user) {
     return res.status(400).json({
       message: "no registered user",
     });
   }
-  res.status(200).json(users);
+  res.status(200).json(user);
 };
 
 export const getProfile = async (req: authRequest, res: Response) => {

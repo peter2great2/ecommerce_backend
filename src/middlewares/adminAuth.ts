@@ -12,6 +12,7 @@ export const adminMiddleware = async (
 ) => {
   const decoded = (await jwt.verify(req.cookies.token, "SECRET")) as {
     id: string;
+    role: string;
   };
   const user = await User.findById(decoded.id);
   if (user?.role !== "admin") {
