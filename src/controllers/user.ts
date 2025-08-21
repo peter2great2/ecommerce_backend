@@ -38,6 +38,7 @@ export const updateUser = async (req: Request, res: Response) => {
       password: hashPass,
       role,
     });
+    res.clearCookie("token");
     if (!editUser) {
       res.status(400).json({
         message: "unable to update information",
@@ -50,5 +51,14 @@ export const updateUser = async (req: Request, res: Response) => {
     res.status(400).json({
       message: "unable to update information",
     });
+  }
+};
+
+export const logout = async (req: Request, res: Response) => {
+  try {
+    await res.clearCookie("token");
+    res.status(200).json({ message: "logged out successful" });
+  } catch (error) {
+    res.status(404).json({ message: "not logged in" });
   }
 };
