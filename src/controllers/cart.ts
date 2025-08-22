@@ -35,3 +35,13 @@ export const addToCart = async (req: AuthRequest, res: Response) => {
   await cart.save();
   res.status(200).json({ message: "Product added to cart", cart });
 };
+
+export const getCart = async (req: AuthRequest, res: Response) => {
+  const cart = await Cart.findOne({ user: req.user?.id }).populate(
+    "items.product"
+  );
+  if (!cart) {
+    return res.status(404).json({ message: "Cart not found" });
+  }
+  res.status(200).json({ cart });
+};
