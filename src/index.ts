@@ -4,6 +4,7 @@ dotenv.config();
 import mongoose from "mongoose";
 import userRouter from "./routes/user";
 import cookieParser from "cookie-parser";
+import productRouter from "./routes/products";
 
 const app: Application = express();
 const port = process.env.PORT || 3000;
@@ -13,6 +14,7 @@ const mongoUrl =
 app.use(express.json());
 app.use(cookieParser());
 app.use("/api/auth", userRouter);
+app.use("/api/products", productRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
