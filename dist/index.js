@@ -10,6 +10,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const user_1 = __importDefault(require("./routes/user"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const products_1 = __importDefault(require("./routes/products"));
+const cart_1 = __importDefault(require("./routes/cart"));
 const app = (0, express_1.default)();
 const port = process.env.PORT || 3000;
 const mongoUrl = process.env.MONGO_URL || "mongodb://127.0.0.1:27017/shopify-app";
@@ -17,6 +18,7 @@ app.use(express_1.default.json());
 app.use((0, cookie_parser_1.default)());
 app.use("/api/auth", user_1.default);
 app.use("/api/products", products_1.default);
+app.use("/api/cart", cart_1.default);
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
     mongoose_1.default
