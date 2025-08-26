@@ -13,6 +13,6 @@ const orderRouter = Router();
 orderRouter.post("/checkout", authMiddleware, checkOut);
 orderRouter.get("/all", adminMiddleware, getAll);
 orderRouter.get("/orders", authMiddleware, getUserOrders);
-orderRouter.put("/update/:id", updateStatus);
+orderRouter.put("/update/:id", adminMiddleware, updateStatus);
 
 export default orderRouter;
