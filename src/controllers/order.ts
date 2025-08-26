@@ -86,3 +86,24 @@ export const getUserOrders = async (req: AuthRequest, res: Response) => {
     });
   }
 };
+
+export const updateStatus = async (req: AuthRequest, res: Response) => {
+  try {
+    const status = req.body.status;
+    const orderId = req.params.id;
+    const update = await Order.findByIdAndUpdate(orderId, { status: status });
+    if (!update) {
+      res.status(400).json({
+        message: "the status failed to update",
+      });
+    }
+    res.status(200).json({
+      message: `item ${req.body.status}`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "server error",
+      error: error,
+    });
+  }
+};
