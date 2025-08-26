@@ -6,6 +6,7 @@ import userRouter from "./routes/user";
 import cookieParser from "cookie-parser";
 import productRouter from "./routes/products";
 import cartRouter from "./routes/cart";
+import orderRouter from "./routes/order";
 
 const app: Application = express();
 const port = process.env.PORT || 3000;
@@ -17,6 +18,7 @@ app.use(cookieParser());
 app.use("/api/auth", userRouter);
 app.use("/api/products", productRouter);
 app.use("/api/cart", cartRouter);
+app.use("/api/order", orderRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
