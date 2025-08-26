@@ -1,12 +1,8 @@
 import Cart from "../schemas/cart";
-import Product from "../schemas/products";
-import User from "../schemas/user";
 import { Request, Response } from "express";
 import Order from "../schemas/order";
+import { AuthRequest } from "../middlewares/auth";
 
-interface AuthRequest extends Request {
-  user?: { id: string };
-}
 export const checkOut = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
@@ -45,5 +41,48 @@ export const checkOut = async (req: AuthRequest, res: Response) => {
     res.status(200).json({ message: "Order placed successfully", order });
   } catch (error) {
     res.status(400).json({ message: "server error", error: error });
+  }
+};
+
+export const getAll = async (req: Request, res: Response) => {
+  try {
+    const totalOrders = await Order.find().countDocuments();
+    const allOrders = await Order.find()
+      .populate("user", "username email")
+      .select("-_id")
+      .populate("items.product")
+      .select("-_id");
+    if (!allOrders)
+      return res.status(400).json({
+        message: "NO ORDERS",
+      });
+    return res.status(200).json({
+      totalOrders: totalOrders,
+      orders: allOrders,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "server error",
+      error: error,
+    });
+  }
+};
+
+export const getUserOrders = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    const noOfOrders = await Order.find().countDocuments();
+    const myOrders = await Order.find({ user: userId }).populate(
+      "items.product"
+    );
+    res.status(200).json({
+      totalOrders: noOfOrders,
+      orders: myOrders,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "server error",
+      error: error,
+    });
   }
 };
