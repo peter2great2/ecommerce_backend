@@ -103,9 +103,6 @@ class FlutterwaveService {
    */
   async generatePaymentLink(paymentData: PaymentData) {
     try {
-      console.log("=== Flutterwave Service: Generate Payment Link ===");
-      console.log("Input data:", paymentData);
-
       // Validate required environment variables
       if (
         !process.env.FLUTTERWAVE_PUBLIC_KEY ||
@@ -137,8 +134,6 @@ class FlutterwaveService {
           consumer_id: paymentData.customer_id,
         },
       };
-
-      console.log("Flutterwave payload:", payload);
 
       // Use direct API call since SDK doesn't have PaymentLink.create
       const response = await fetch("https://api.flutterwave.com/v3/payments", {

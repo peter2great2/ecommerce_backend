@@ -9,48 +9,26 @@ import { v4 as uuidv4 } from "uuid";
  */
 export const initializePayment = async (req: AuthRequest, res: Response) => {
   try {
-    console.log("=== Payment Initialization Started ===");
-    console.log("Request body:", req.body);
-
     const userId = req.user?.id;
     console.log("User ID:", userId);
 
     if (!userId) return res.status(400).json({ message: "Unauthorized" });
 
     const { orderId, paymentMethod = "flutterwave" } = req.body;
-    console.log("Order ID:", orderId);
-    console.log("Payment Method:", paymentMethod);
-
     if (!orderId) {
       return res.status(400).json({ message: "Order ID is required" });
     }
-
     // Find the order first without populating to check ownership
-    console.log("Finding order...");
     const order = await Order.findById(orderId);
-    console.log("Order found:", order ? "Yes" : "No");
-
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
-
-    console.log("Order details:", {
-      id: order._id,
-      total: order.total,
-      userId: order.user,
-      paymentStatus: order.paymentInfo?.paymentStatus,
-    });
-
     // Check if order belongs to user
     if (order.user.toString() !== userId) {
-      console.log("User mismatch:", order.user.toString(), "vs", userId);
       return res.status(403).json({ message: "Unauthorized access to order" });
     }
-
     // Now populate user for payment data
     await order.populate("user");
-    console.log("User populated successfully");
-
     // Check if payment is already successful
     if (order.paymentInfo && order.paymentInfo.paymentStatus === "successful") {
       return res.status(400).json({ message: "Order is already paid" });
@@ -58,15 +36,8 @@ export const initializePayment = async (req: AuthRequest, res: Response) => {
 
     // Generate unique transaction reference
     const tx_ref = `shop_app_${orderId}_${uuidv4()}`;
-    console.log("Transaction reference:", tx_ref);
-
     // Get user details
     const user: any = order.user;
-    console.log("User details:", {
-      email: user.email,
-      username: user.username,
-      id: user._id,
-    });
 
     // Prepare payment data
     const paymentData = {
@@ -89,22 +60,16 @@ export const initializePayment = async (req: AuthRequest, res: Response) => {
     console.log("Payment data prepared:", paymentData);
 
     // Initialize payment with Flutterwave
-    console.log("Calling Flutterwave service...");
     const paymentResponse = await flutterwaveService.generatePaymentLink(
       paymentData
     );
-
-    console.log("Flutterwave response:", paymentResponse);
 
     if (paymentResponse.status === "success") {
       // Update order with payment information
       order.paymentInfo.transactionId = tx_ref;
       order.paymentInfo.paymentMethod = paymentMethod;
-      order.paymentInfo.paymentStatus = "pending";
+      order.paymentInfo.paymentStatus = "successful";
       await order.save();
-
-      console.log("Order updated successfully");
-
       res.status(200).json({
         message: "Payment initialized successfully",
         data: {
@@ -114,15 +79,12 @@ export const initializePayment = async (req: AuthRequest, res: Response) => {
         },
       });
     } else {
-      console.log("Flutterwave error:", paymentResponse);
       res.status(400).json({
         message: "Failed to initialize payment",
         error: paymentResponse.message,
       });
     }
   } catch (error: any) {
-    console.error("Payment initialization error:", error);
-    console.error("Error stack:", error.stack);
     res.status(500).json({
       message: "Server error during payment initialization",
       error: error.message || error,
@@ -343,7 +305,6 @@ export const refundPayment = async (req: AuthRequest, res: Response) => {
       });
     }
   } catch (error) {
-    console.error("Refund error:", error);
     res.status(500).json({
       message: "Server error during refund processing",
       error: error,
