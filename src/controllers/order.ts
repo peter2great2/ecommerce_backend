@@ -34,11 +34,24 @@ export const checkOut = async (req: AuthRequest, res: Response) => {
       items: orderItems.map((item: any) => item),
       total,
       status: "Pending",
+      paymentInfo: {
+        paymentMethod: "flutterwave",
+        paymentStatus: "pending",
+        amount: total,
+      },
     });
     await order.save();
     cart.items = [];
     await cart.save();
-    res.status(200).json({ message: "Order placed successfully", order });
+    res.status(200).json({
+      message: "Order created successfully. Proceed to payment.",
+      order: {
+        _id: order._id,
+        total: order.total,
+        status: order.status,
+        paymentStatus: order.paymentInfo.paymentStatus,
+      },
+    });
   } catch (error) {
     res.status(400).json({ message: "server error", error: error });
   }
