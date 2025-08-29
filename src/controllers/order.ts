@@ -1,6 +1,7 @@
 import Cart from "../schemas/cart";
 import { Request, Response } from "express";
 import Order from "../schemas/order";
+import Product from "../schemas/products";
 import { AuthRequest } from "../middlewares/auth";
 
 export const checkOut = async (req: AuthRequest, res: Response) => {
@@ -15,16 +16,30 @@ export const checkOut = async (req: AuthRequest, res: Response) => {
     for (const item of cart.items) {
       const product: any = item.product;
 
-      // ✅ Stock check
+      if (!product)
+        return res
+          .status(400)
+          .json({ error: `Product not found in cart item` });
+
+      // Local check for available stock (fast-fail)
       if (item.quantity > product.stock) {
         return res
           .status(400)
           .json({ error: `Not enough stock for ${product.name}` });
       }
 
-      // Deduct stock
-      product.stock -= item.quantity;
-      await product.save();
+      // Atomically decrement stock to avoid validating/populating full product document
+      const updated = await Product.findOneAndUpdate(
+        { _id: product._id, stock: { $gte: item.quantity } },
+        { $inc: { stock: -item.quantity } },
+        { new: true }
+      );
+
+      if (!updated) {
+        return res
+          .status(400)
+          .json({ error: `Not enough stock for ${product.name}` });
+      }
 
       orderItems.push({ product: product._id, quantity: item.quantity });
       total += product.price * item.quantity;
