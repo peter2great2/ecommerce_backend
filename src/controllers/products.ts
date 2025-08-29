@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import Product from "../schemas/products";
 
 export const createProduct = async (req: Request, res: Response) => {
-  const { name, stock, description, category, price } = req.body;
+  const { name, stock, description, category, price, image } = req.body;
   try {
     const newProduct = new Product({
       name,
@@ -11,6 +11,7 @@ export const createProduct = async (req: Request, res: Response) => {
       description,
       category,
       price,
+      image,
     });
     await newProduct.save();
     res.status(200).json({
