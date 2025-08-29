@@ -10,7 +10,6 @@ import { v4 as uuidv4 } from "uuid";
 export const initializePayment = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.id;
-    console.log("User ID:", userId);
 
     if (!userId) return res.status(400).json({ message: "Unauthorized" });
 
@@ -56,8 +55,6 @@ export const initializePayment = async (req: AuthRequest, res: Response) => {
         description: `Payment for Order #${orderId}`,
       },
     };
-
-    console.log("Payment data prepared:", paymentData);
 
     // Initialize payment with Flutterwave
     const paymentResponse = await flutterwaveService.generatePaymentLink(
@@ -161,7 +158,6 @@ export const verifyPayment = async (req: Request, res: Response) => {
       });
     }
   } catch (error) {
-    console.error("Payment verification error:", error);
     res.status(500).json({
       message: "Server error during payment verification",
       error: error,
@@ -203,17 +199,14 @@ export const handleWebhook = async (req: Request, res: Response) => {
           order.paymentInfo.paidAt = new Date();
           order.status = "Paid";
           await order.save();
-
-          console.log(`Payment confirmed for order: ${order._id}`);
         } else {
-          console.error(`Amount mismatch for order: ${order._id}`);
+          res.status(400).json({ message: "Payment amount mismatch" });
         }
       }
     }
 
     res.status(200).json({ status: "ok" });
   } catch (error) {
-    console.error("Webhook error:", error);
     res.status(500).json({ message: "Webhook processing error" });
   }
 };
