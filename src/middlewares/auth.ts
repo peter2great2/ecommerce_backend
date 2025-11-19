@@ -16,7 +16,10 @@ export const authMiddleware = (
     return res.status(401).json({ message: "No token, authorization denied" });
 
   try {
-    const decoded = jwt.verify(token, "SECRET") as { id: string; role: string };
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
+      id: string;
+      role: string;
+    };
     req.user = { id: decoded.id, role: decoded.role };
     next();
     if (!decoded) {

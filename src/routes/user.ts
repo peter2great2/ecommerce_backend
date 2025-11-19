@@ -19,7 +19,7 @@ userRouter.delete("/user/remove/:id", authMiddleware, removeUser);
 
 userRouter.post("/register", register);
 userRouter.post("/login", login);
-userRouter.get("/profile/:id", authMiddleware, getProfile);
+userRouter.get("/profile", authMiddleware, getProfile);
 userRouter.put("/update/:id", updateUser);
 userRouter.post("/user/logout", logout);
 

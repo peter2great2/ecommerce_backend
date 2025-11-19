@@ -8,12 +8,14 @@ import productRouter from "./routes/products";
 import cartRouter from "./routes/cart";
 import orderRouter from "./routes/order";
 import paymentRouter from "./routes/payment";
+import cors from "cors";
 
 const app: Application = express();
 const port = process.env.PORT || 3000;
 const mongoUrl =
   (process.env.MONGO_URL as string) || "mongodb://127.0.0.1:27017/shopify-app";
 
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 app.use("/api/auth", userRouter);

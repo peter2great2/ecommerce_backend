@@ -1,6 +1,7 @@
 import User from "../schemas/user";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 
 interface authRequest extends Request {
@@ -23,7 +24,13 @@ export const getAll = async (req: authRequest, res: Response) => {
 };
 
 export const getProfile = async (req: authRequest, res: Response) => {
-  const id = req.params.id;
+  // const id = req.params.id;
+  const user = jwt.verify(
+    req.cookies.token,
+    process.env.JWT_SECRET as string
+  ) as { id: string; role: string };
+  const id = user.id;
+
   if (!id) {
     return res.status(400).json({
       message: "an id is needed to see profile",

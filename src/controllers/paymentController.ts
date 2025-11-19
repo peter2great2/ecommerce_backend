@@ -47,7 +47,7 @@ export const initializePayment = async (req: AuthRequest, res: Response) => {
       name: user.username || user.email,
       tx_ref: tx_ref,
       redirect_url: `${
-        process.env.FRONTEND_URL || "http://localhost:3000"
+        process.env.FRONTEND_URL || "http://localhost:5173"
       }/payment/callback`,
       customer_id: userId,
       customizations: {
