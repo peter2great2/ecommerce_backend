@@ -46,7 +46,8 @@ export const getCart = async (req: AuthRequest, res: Response) => {
     return res.status(404).json({ message: "Cart is empty" });
   }
   const cart = await Cart.findOne({ user: req.user?.id }).populate(
-    "items.product"
+    "items.product",
+    "name price"
   );
   if (!cart) {
     return res.status(404).json({ message: "Cart not found" });

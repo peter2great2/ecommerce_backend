@@ -70,7 +70,7 @@ class FlutterwaveService {
           name: paymentData.name,
         },
         customizations: {
-          title: paymentData.customizations?.title || "Shop App Payment",
+          title: paymentData.customizations?.title || "Payment",
           description:
             paymentData.customizations?.description || "Payment for order",
           logo: paymentData.customizations?.logo || "",
