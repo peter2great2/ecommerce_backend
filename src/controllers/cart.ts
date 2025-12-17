@@ -41,13 +41,17 @@ export const addToCart = async (req: AuthRequest, res: Response) => {
 };
 
 export const getCart = async (req: AuthRequest, res: Response) => {
+  const cartCount = await Cart.countDocuments({ user: req.user?.id });
+  if (cartCount === 0) {
+    return res.status(404).json({ message: "Cart is empty" });
+  }
   const cart = await Cart.findOne({ user: req.user?.id }).populate(
     "items.product"
   );
   if (!cart) {
     return res.status(404).json({ message: "Cart not found" });
   }
-  res.status(200).json({ cart });
+  res.status(200).json({ cart, cartCount });
 };
 
 export const removeFromCart = async (req: AuthRequest, res: Response) => {
@@ -68,4 +72,30 @@ export const removeFromCart = async (req: AuthRequest, res: Response) => {
   cart.items.splice(itemIndex, 1);
   await cart.save();
   res.status(200).json({ message: "Item removed from cart", cart });
+};
+
+// update cart item quantity
+export const updateCartItemQuantity = async (
+  req: AuthRequest,
+  res: Response
+) => {
+  const { productId, quantity } = req.body;
+  if (!productId || !quantity) {
+    return res
+      .status(400)
+      .json({ message: "productId and quantity are required" });
+  }
+  const cart = await Cart.findOne({ user: req.user?.id });
+  if (!cart) {
+    return res.status(404).json({ message: "Cart not found" });
+  }
+  const itemIndex = cart.items.findIndex(
+    (item: any) => item.product.toString() === productId
+  );
+  if (itemIndex === -1) {
+    return res.status(404).json({ message: "Item not found in cart" });
+  }
+  cart.items[itemIndex].quantity = quantity;
+  await cart.save();
+  res.status(200).json({ message: "Cart item quantity updated", cart });
 };

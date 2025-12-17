@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 export const register = async (req: Request, res: Response) => {
-  const { email, password, username, role } = req.body;
+  const { email, password, username, role, firstName, lastName } = req.body;
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -15,6 +15,9 @@ export const register = async (req: Request, res: Response) => {
       email,
       password: hashedPassword,
       username,
+      firstName,
+      lastName,
+      // picture: undefined,
       role,
     });
     await user.save();
@@ -45,7 +48,7 @@ export const login = async (req: Request, res: Response) => {
       { id: user._id, role: user.role },
       process.env.JWT_SECRET as string,
       {
-        expiresIn: "1hr",
+        expiresIn: "1h",
       }
     );
     res.cookie("token", generateToken);
