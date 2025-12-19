@@ -12,8 +12,7 @@ import cors from "cors";
 
 const app: Application = express();
 const port = process.env.PORT || 3000;
-const mongoUrl =
-  (process.env.MONGO_URL as string) || "mongodb://127.0.0.1:27017/shopify-app";
+const mongoUrl = process.env.MONGO_URL as string;
 
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(express.json());
